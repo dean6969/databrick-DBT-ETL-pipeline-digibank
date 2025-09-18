@@ -1,0 +1,19 @@
+name: Trigger Databricks Job
+
+on:
+  push:
+    branches:
+      - main   # Mỗi lần push vào branch main
+
+jobs:
+  run-databricks-job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Databricks CLI
+        run: pip install databricks-cli
+
+      - name: Run Databricks Job
+        run: databricks jobs run-now --job-id 465245283901461
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
