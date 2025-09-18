@@ -9,11 +9,14 @@ jobs:
   run-databricks-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Install Databricks CLI
-        run: pip install databricks-cli
-
-      - name: Run Databricks Job
-        run: databricks jobs run-now --job-id 465245283901461
+      - name: Trigger Databricks Job via REST API
+        run: |
+          curl -X POST "${DATABRICKS_HOST}/api/2.1/jobs/run-now" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "job_id": 465245283901461
+            }'
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
