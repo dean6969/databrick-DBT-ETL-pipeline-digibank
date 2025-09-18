@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: dim_date
+    columns:
+      - name: date_sk
+        tests: [not_null, unique]
+      - name: date
+        tests: [not_null]
+
+  - name: dim_customer_scd2
+    columns:
+      - name: customer_sk
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+      - name: valid_from
+      - name: valid_to
+      - name: is_current
+
+  - name: dim_product
+    columns:
+      - name: product_sk
+        tests: [not_null, unique]
+      - name: product_id
+        tests: [not_null]
+
+  - name: fact_transactions
+    columns:
+      - name: transaction_id
+        tests: [not_null, unique]
+      - name: customer_sk
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_customer_scd2'), field: customer_sk}
+      - name: date_sk
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_date'), field: date_sk}
+
+  - name: fact_enrollments
+    columns:
+      - name: customer_sk
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_customer_scd2'), field: customer_sk}
+      - name: date_sk
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_date'), field: date_sk}
+
+  - name: fact_crm_interactions
+    columns:
+      - name: interaction_id
+        tests: [not_null, unique]
+      - name: customer_sk
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_customer_scd2'), field: customer_sk}
+      - name: date_sk
+        tests:
+          - not_null
+          - relationships: {to: ref('dim_date'), field: date_sk}

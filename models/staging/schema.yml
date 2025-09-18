@@ -1,0 +1,39 @@
+version: 2
+
+models:
+  - name: stg_transaction_history
+    description: Cleaned transactions from bronze RAW-transaction_history
+    columns:
+      - name: transaction_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+      - name: product_id
+      - name: transaction_amount
+      - name: closing_balance
+      - name: transaction_ts
+      - name: transaction_date
+
+  - name: stg_customer
+    description: Cleaned customers from RAW-customer_raw
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: email
+        tests: [not_null]
+
+  - name: stg_crm_interactions
+    description: CRM interactions from RAW-crm_interactions
+    columns:
+      - name: interaction_id
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+
+  - name: stg_product_enrollments
+    description: Product enrollments from RAW-product_enrollments
+    columns:
+      - name: customer_id
+        tests: [not_null]
+      - name: product_id
+        tests: [not_null]

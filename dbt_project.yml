@@ -1,0 +1,41 @@
+name: 'digibank'
+version: '1.0.0'
+profile: 'digibank'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+# QUAN TRỌNG: quote catalog/schema/identifier để hỗ trợ tên có dấu '-'
+# quoting:
+#   database: true     # = catalog trong Databricks/UC
+#   schema: true
+#   identifier: true
+
+models:
+  digibank:
+    +catalog: digibank
+    +file_format: delta   # (tuỳ chọn) đảm bảo tạo Delta tables
+
+    bronze:
+      +schema: digi-dev-bronze
+      +materialized: table
+
+    silver:
+      +schema: dev-silver
+      +materialized: table
+
+    gold:
+      +schema: dev-gold
+      +materialized: table
+
+    staging:
+      +schema: dev-staging
+      +materialized: table

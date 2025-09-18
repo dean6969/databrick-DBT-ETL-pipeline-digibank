@@ -1,0 +1,22 @@
+version: 2
+
+sources:
+  - name: bronze
+    database: digibank
+    schema: digi-dev-bronze
+    quoting:
+      database: false
+      schema: true
+      identifier: true
+    tables:
+      - name: raw_transaction_history
+        identifier: "RAW-transaction_history"
+
+      - name: raw_customer_raw
+        identifier: "RAW-customer_raw"
+
+      - name: raw_crm_interactions
+        identifier: "RAW-crm_interactions"
+
+      - name: raw_product_enrollments
+        identifier: "RAW-product_enrollments"
