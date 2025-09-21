@@ -23,7 +23,7 @@ Primary join key: `customer_id` (stable). If not stable, derive a unified key in
 
 ```mermaid
 flowchart LR
-  LZ[Landing Zone (files)] --> BZ[Bronze / raw Delta]
+  LZ[Landing Zone (files)] --> BZ[Bronze raw Delta]
   BZ --> STG[Staging (standardize, keys)]
   STG --> DIM[Dimensions (SCD2)]
   STG --> FCT[Facts]
