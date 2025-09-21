@@ -1,63 +1,213 @@
 version: 2
 
 models:
-  - name: dim_date
-    columns:
-      - name: date_sk
-        tests: [not_null, unique]
-      - name: date
-        tests: [not_null]
+  # ======================
+  # DIMENSIONS (SILVER)
+  # ======================
 
-  - name: dim_customer_scd2
+  - name: dim_customer
+    description: "Customer dimension built from customer snapshot; includes validity window."
     columns:
-      - name: customer_sk
-        tests: [not_null, unique]
       - name: customer_id
+        description: "Natural customer id."
+        tests: [not_null]
         tests: [not_null]
       - name: valid_from
+        description: "Start of validity window."
+        tests: [not_null]
       - name: valid_to
+        description: "End of validity window (NULL if current)."
       - name: is_current
+        description: "Whether this row is the current version."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
 
-  - name: dim_product
+  - name: dim_date
+    description: "Date dimension: one row per calendar day."
     columns:
-      - name: product_sk
+      - name: date_pk
+        description: "Surrogate date key (yyyymmdd)."
         tests: [not_null, unique]
-      - name: product_id
+      - name: date
+        description: "Calendar date (DATE)."
+        tests: [not_null, unique]
+      - name: year
+        description: "Year."
+      - name: quarter
+        description: "Quarter number."
+      - name: month
+        description: "Month number."
+      - name: day
+        description: "Day of month."
+      - name: week_of_year
+        description: "Week of year."
+      - name: day_of_week
+        description: "Day of week (engine convention)."
+      - name: is_weekend
+        description: "Weekend flag."
+      - name: month_end_date
+        description: "Month end date."
+      - name: month_start_date
+        description: "Month start date."
+
+  - name: dim_interactions
+    description: "Type-1 dimension of interaction types (CALL/EMAIL/CHAT), derived from staging."
+    columns:
+      - name: interaction_pk
+        description: "Surrogate key for interaction type."
+        tests: [not_null, unique]
+
+      - name: interaction_id
+        description: "id for interaction type."
         tests: [not_null]
 
+      - name: interaction_type
+        description: "Normalized interaction type value."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['call','email','chat']
+              quote: true
+
+  - name: dim_product
+    description: "Product enrollment dimension (SCD-like via snapshot); PK is enrollment_pk."
+    columns:
+      - name: enrollment_pk
+        description: "Primary key for the product enrollment dimension."
+        tests: [not_null, unique]
+      - name: product_id
+        description: "Enrollment-scoped product id."
+        tests: [not_null]
+      - name: product_type
+        description: "Product type label."
+      - name: valid_from
+        description: "Start of validity window."
+      - name: valid_to
+        description: "End of validity window (NULL if current)."
+      - name: is_current
+        description: "Whether this row is the current version."
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+  - name: dim_time
+    description: "Time-of-day dimension: one row per second (0..86399)."
+    columns:
+      - name: time_pk
+        description: "Surrogate key for time of day (md5 of second_of_day)."
+        tests: [not_null, unique]
+      - name: second_of_day
+        description: "Second index in the day (0..86399)."
+        tests: [not_null, unique]
+      - name: hour
+        description: "Hour of day (0..23)."
+      - name: minute
+        description: "Minute (0..59)."
+      - name: second
+        description: "Second (0..59)."
+      - name: time_label
+        description: "HH:mm:ss label."
+
+  # ======================
+  # FACTS (SILVER)
+  # ======================
+
+  - name: fact_interactions
+    description: "Fact for CRM interactions (one row per interaction)."
+    columns:
+      - name: interaction_pk
+        description: "Natural interaction id."
+        tests: [not_null, unique]
+      
+      - name: interaction_type
+        description: "Natural interaction id."
+        tests:
+          - accepted_values:
+              values: ['call','chat', 'email']
+              quote: true
+
+      - name: interaction_date_pk
+        description: "FK to dim_date."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_pk
+      - name: customer_id
+        description: "FK to dim_customer (as-of)."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+      - name: interaction_count
+        description: "Count measure (defaults to 1)."
+
+  - name: fact_product_enrollments
+    description: "Fact of product enrollments and credit limit (per customer-product enrollment)."
+    columns:
+      - name: customer_id
+        description: "FK to dim_customer."
+        tests:
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+      - name: enrollment_date_pk
+        description: "FK to dim_date (enrollment date)."
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date_pk
+      - name: product_enrollment_pk
+        description: "FK to dim_product via enrollment_pk (if selected in the SQL)."
+        tests:
+          - relationships:
+              to: ref('dim_product')
+              field: enrollment_pk
+      - name: credit_limit
+        description: "Credit limit value (DECIMAL)."
+
   - name: fact_transactions
+    description: "Fact for transactions (one row per transaction) with SCD2 as-of lookups."
     columns:
+      - name: transaction_pk
+        description: "Surrogate key for the transaction row."
+        tests: [not_null, unique]
       - name: transaction_id
-        tests: [not_null, unique]
-      - name: customer_sk
+        description: "Natural transaction id."
+        tests: [not_null]
+      - name: transaction_date_pk
+        description: "FK to dim_date."
         tests:
           - not_null
-          - relationships: {to: ref('dim_customer_scd2'), field: customer_sk}
-      - name: date_sk
+          - relationships:
+              to: ref('dim_date')
+              field: date_pk
+      - name: transaction_time_pk
+        description: "FK to dim_time."
         tests:
           - not_null
-          - relationships: {to: ref('dim_date'), field: date_sk}
-
-  - name: fact_enrollments
-    columns:
-      - name: customer_sk
+          - relationships:
+              to: ref('dim_time')
+              field: time_pk
+      - name: customer_id
+        description: "FK to dim_customer (as-of at transaction_ts)."
         tests:
           - not_null
-          - relationships: {to: ref('dim_customer_scd2'), field: customer_sk}
-      - name: date_sk
+          - relationships:
+              to: ref('dim_customer')
+              field: customer_id
+      - name: product_id
+        description: "FK to dim_product via enrollment_pk (as-of at transaction_ts)."
         tests:
           - not_null
-          - relationships: {to: ref('dim_date'), field: date_sk}
-
-  - name: fact_crm_interactions
-    columns:
-      - name: interaction_id
-        tests: [not_null, unique]
-      - name: customer_sk
-        tests:
-          - not_null
-          - relationships: {to: ref('dim_customer_scd2'), field: customer_sk}
-      - name: date_sk
-        tests:
-          - not_null
-          - relationships: {to: ref('dim_date'), field: date_sk}
+          - relationships:
+              to: ref('dim_product')
+              field: product_id
+      - name: transaction_amount
+        description: "Transaction amount (DECIMAL)."
+      - name: closing_balance
+        description: "Closing balance after the transaction (DECIMAL)."

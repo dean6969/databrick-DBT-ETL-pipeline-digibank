@@ -25,17 +25,17 @@ models:
     +file_format: delta   # (tuỳ chọn) đảm bảo tạo Delta tables
 
     bronze:
-      +schema: digi-dev-bronze
+      +schema: digi_dev_bronze
       +materialized: table
 
     silver:
-      +schema: dev-silver
+      +schema: dev_silver
       +materialized: table
 
     gold:
-      +schema: dev-gold
+      +schema: dev_gold
       +materialized: table
 
     staging:
-      +schema: dev-staging
+      +schema: dev_staging
       +materialized: table

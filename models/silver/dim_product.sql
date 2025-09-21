@@ -1,13 +1,10 @@
 {{ config(materialized='table') }}
 
-with base as (
-  select distinct
-    cast(product_id as int)               as product_id,
-    upper(trim(product_type))             as product_type
-  from {{ ref('stg_product_enrollments') }}
-)
 select
-  md5(cast(product_id as string))         as product_sk,
-  product_id,
-  product_type
-from base
+  enrollment_pk,
+  product_id     as product_id,
+  product_type,
+  dbt_valid_from                as valid_from,
+  dbt_valid_to                  as valid_to,
+  case when dbt_valid_to is null then true else false end as is_current
+from {{ ref('snp_product_enrollments') }}

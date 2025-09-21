@@ -1,39 +1,100 @@
 version: 2
 
 models:
-  - name: stg_transaction_history
-    description: Cleaned transactions from bronze RAW-transaction_history
-    columns:
-      - name: transaction_id
-        tests: [not_null, unique]
-      - name: customer_id
-        tests: [not_null]
-      - name: product_id
-      - name: transaction_amount
-      - name: closing_balance
-      - name: transaction_ts
-      - name: transaction_date
-
-  - name: stg_customer
-    description: Cleaned customers from RAW-customer_raw
-    columns:
-      - name: customer_id
-        tests: [not_null, unique]
-      - name: email
-        tests: [not_null]
+  # ======================
+  # STAGING
+  # ======================
 
   - name: stg_crm_interactions
-    description: CRM interactions from RAW-crm_interactions
+    description: "Staging CRM interactions cleaned and conformed."
     columns:
-      - name: interaction_id
+      - name: interaction_pk
+        description: "Surrogate key for interaction."
         tests: [not_null, unique]
+      - name: interaction_id
+        description: "Original interaction id from source."
+        tests: [not_null]
       - name: customer_id
+        description: "Customer identifier."
+        tests: [not_null]
+      - name: interaction_type
+        description: "Interaction type (CALL, EMAIL, CHAT)."
+        tests:
+          - accepted_values:
+              values: ['call','email','chat']
+              quote: true
+      - name: interaction_date
+        description: "Date of the interaction event (DATE)."
         tests: [not_null]
 
-  - name: stg_product_enrollments
-    description: Product enrollments from RAW-product_enrollments
+  - name: stg_customer
+    description: "Staging customer data with cleaned fields."
     columns:
       - name: customer_id
+        description: "Customer identifier."
+        tests: [not_null, unique]
+      - name: first_name
+        description: "First name."
+      - name: last_name
+        description: "Last name."
+      - name: email
+        description: "Lowercased email."
+      - name: mobile
+        description: "Digits-only mobile."
+      - name: gender
+        description: "Gender."
+        tests:
+          - accepted_values:
+              values: ['male','female']
+              quote: true
+      - name: date_of_birth
+        description: "Date of birth (DATE)."
+      - name: signup_date
+        description: "Signup date (DATE)."
+
+  - name: stg_product_enrollments
+    description: "Staging product enrollments with a stable enrollment_pk."
+    columns:
+      - name: enrollment_pk
+        description: "Surrogate key for an enrollment (customer-product-time grain)."
+        tests: [not_null, unique]
+      - name: product_id
+        description: "Per-customer surrogate product id (enrollment-scoped)."
+        tests: [not_null]
+      - name: customer_id
+        description: "Customer identifier."
+        tests: [not_null]
+      - name: product_type
+        description: "Product type label (e.g., SAVINGS, CREDIT CARD)."
+      - name: enrollment_date
+        description: "Enrollment date (DATE)."
+        tests: [not_null]
+      - name: credit_limit
+        description: "Credit limit at enrollment (DECIMAL)."
+
+  - name: stg_transaction_history
+    description: "Staging transaction history with normalized amounts & timestamps."
+    columns:
+      - name: transaction_pk
+        description: "Surrogate key (transaction_id + timestamp at second grain)."
+        tests: [not_null, unique]
+      - name: transaction_id
+        description: "Original transaction id."
+        tests: [not_null]
+      - name: customer_id
+        description: "Customer identifier."
         tests: [not_null]
       - name: product_id
+        description: "Enrollment-scoped product id."
         tests: [not_null]
+      - name: transaction_amount
+        description: "Transaction amount (DECIMAL)."
+      - name: closing_balance
+        description: "Closing balance after the transaction (DECIMAL)."
+      - name: transaction_ts
+        description: "Transaction timestamp (rounded to seconds)."
+        tests: [not_null]
+      - name: transaction_date
+        description: "Calendar date derived from timestamp (DATE)."
+      - name: transaction_time
+        description: "HH:mm:ss derived from timestamp."

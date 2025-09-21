@@ -1,7 +1,12 @@
-{{ config(materialized='table') }}
+{{ config(materialized='view') }}
 
 with src as (
   select
+      {{ dbt_utils.generate_surrogate_key([
+        'product_id',
+        'customer_id',
+        'product_type'
+      ]) }} as enrollment_pk,
       cast(product_id as int)       as product_id,
       cast(customer_id as int)      as customer_id,
       trim(product_type)            as product_type,
