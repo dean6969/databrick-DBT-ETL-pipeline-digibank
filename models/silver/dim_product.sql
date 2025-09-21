@@ -1,16 +1,10 @@
-{{ config(
-  materialized = 'table'
-) }}
+{{ config(materialized='table') }}
 
-SELECT
+select
   enrollment_pk,
-  product_id AS product_id,
+  product_id     as product_id,
   product_type,
-  dbt_valid_from AS valid_from,
-  dbt_valid_to AS valid_to,
-  CASE
-    WHEN dbt_valid_to IS NULL THEN TRUE
-    ELSE FALSE
-  END AS is_current
-FROM
-  {{ ref('snp_product_enrollments') }}
+  dbt_valid_from                as valid_from,
+  dbt_valid_to                  as valid_to,
+  case when dbt_valid_to is null then true else false end as is_current
+from {{ ref('snp_product_enrollments') }}

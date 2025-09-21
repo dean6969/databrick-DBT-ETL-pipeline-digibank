@@ -2,6 +2,7 @@
 
 select
   d.date_pk                             as enrollment_date_pk,
+
   p.enrollment_pk                       as product_enrollment_pk,
   i.product_id,
   i.customer_id,
@@ -14,7 +15,7 @@ left join {{ ref('dim_customer') }} c
   on c.customer_id = i.customer_id
  and cast(i.enrollment_date as timestamp) >= c.valid_from
  and (c.valid_to is null or cast(i.enrollment_date as timestamp) < c.valid_to)
--- product-enrollment SCD2 
+-- product-enrollment l
 left join {{ ref('dim_product') }} p
   on p.product_id = i.product_id
  and cast(i.enrollment_date as timestamp) >= p.valid_from

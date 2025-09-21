@@ -1,30 +1,33 @@
 {{ config(
-    materialized = 'table'
+    materialized='table'
 ) }}
 
-WITH base AS (
-
-    SELECT
-        explode(SEQUENCE(0, 86399, 1)) AS second_of_day
+with base as (
+    select explode(sequence(0, 86399, 1)) as second_of_day
 ),
-FINAL AS (
-    SELECT
+
+final as (
+
+    select
         second_of_day,
-        FLOOR(
-            second_of_day / 3600
-        ) AS HOUR,
-        FLOOR((second_of_day % 3600) / 60) AS MINUTE,
-        second_of_day % 60 AS SECOND,
-        LPAD(CAST(FLOOR(second_of_day / 3600) AS STRING), 2, '0') || ':' || LPAD(CAST(FLOOR((second_of_day % 3600) / 60) AS STRING), 2, '0') || ':' || LPAD(CAST(second_of_day % 60 AS STRING), 2, '0') AS time_label
-    FROM
-        base
+        floor(second_of_day / 3600) as hour,
+        floor((second_of_day % 3600) / 60) as minute,
+        second_of_day % 60 as second,
+
+        lpad(cast(floor(second_of_day / 3600) as string), 2, '0')
+          || ':' ||
+        lpad(cast(floor((second_of_day % 3600) / 60) as string), 2, '0')
+          || ':' ||
+        lpad(cast(second_of_day % 60 as string), 2, '0') as time_label
+
+    from base
 )
-SELECT
-    MD5(CAST(second_of_day AS STRING)) AS time_pk,
+
+select
+    md5(cast(second_of_day as string)) as time_pk,
     second_of_day,
-    HOUR,
-    MINUTE,
-    SECOND,
+    hour,
+    minute,
+    second,
     time_label
-FROM
-    FINAL
+from final
