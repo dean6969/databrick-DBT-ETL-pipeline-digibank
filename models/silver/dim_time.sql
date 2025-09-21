@@ -1,36 +1,30 @@
 {{ config(
-    materialized='table'
+    materialized = 'table'
 ) }}
 
-with base as (
+WITH base AS (
 
-    -- Sinh số giây trong ngày (0 → 86399)
-    select explode(sequence(0, 86399, 1)) as second_of_day
-
+    SELECT
+        explode(SEQUENCE(0, 86399, 1)) AS second_of_day
 ),
-
-final as (
-
-    select
+FINAL AS (
+    SELECT
         second_of_day,
-        floor(second_of_day / 3600) as hour,
-        floor((second_of_day % 3600) / 60) as minute,
-        second_of_day % 60 as second,
-
-        lpad(cast(floor(second_of_day / 3600) as string), 2, '0')
-          || ':' ||
-        lpad(cast(floor((second_of_day % 3600) / 60) as string), 2, '0')
-          || ':' ||
-        lpad(cast(second_of_day % 60 as string), 2, '0') as time_label
-
-    from base
+        FLOOR(
+            second_of_day / 3600
+        ) AS HOUR,
+        FLOOR((second_of_day % 3600) / 60) AS MINUTE,
+        second_of_day % 60 AS SECOND,
+        LPAD(CAST(FLOOR(second_of_day / 3600) AS STRING), 2, '0') || ':' || LPAD(CAST(FLOOR((second_of_day % 3600) / 60) AS STRING), 2, '0') || ':' || LPAD(CAST(second_of_day % 60 AS STRING), 2, '0') AS time_label
+    FROM
+        base
 )
-
-select
-    md5(cast(second_of_day as string)) as time_pk,
+SELECT
+    MD5(CAST(second_of_day AS STRING)) AS time_pk,
     second_of_day,
-    hour,
-    minute,
-    second,
+    HOUR,
+    MINUTE,
+    SECOND,
     time_label
-from final
+FROM
+    FINAL

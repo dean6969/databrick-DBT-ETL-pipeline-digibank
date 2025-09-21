@@ -1,0 +1,9 @@
+version: 2
+models:
+  - name: customer_360
+    columns:
+      - name: customer_id
+        tests: [not_null, unique]
+      - name: is_active_90d
+        tests:
+          - accepted_values: {values: [true]}

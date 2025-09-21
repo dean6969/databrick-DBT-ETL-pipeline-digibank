@@ -1,8 +1,8 @@
 {{ config(
-    materialized='table'
+    materialized = 'table'
 ) }}
 
-select
+SELECT
     customer_id,
     first_name,
     last_name,
@@ -11,12 +11,21 @@ select
     gender,
     date_of_birth,
     signup_date,
-    dbt_valid_from as valid_from,
-    dbt_valid_to   as valid_to,
-    case when dbt_valid_to is null then true else false end as is_current
-from {{ ref('snp_customer') }}
+    dbt_valid_from AS valid_from,
+    dbt_valid_to AS valid_to,
+    CASE
+        WHEN dbt_valid_to IS NULL THEN TRUE
+        ELSE FALSE
+    END AS is_current
+FROM
+    {{ ref('snp_customer') }}
 
 {% if is_incremental() %}
--- chỉ insert các version mới từ snapshot
-where dbt_valid_from > (select max(valid_from) from {{ this }})
+WHERE
+    dbt_valid_from > (
+        SELECT
+            MAX(valid_from)
+        FROM
+            {{ this }}
+    )
 {% endif %}

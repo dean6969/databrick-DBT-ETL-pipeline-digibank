@@ -1,9 +1,13 @@
-{{ config(materialized='table') }}
+{{ config(
+  materialized = 'table'
+) }}
 
-select 
+SELECT
   interaction_pk,
   interaction_id,
   interaction_type
-from {{ ref('stg_crm_interactions') }}
-where interaction_type is not null
-  and trim(interaction_type) <> ''
+FROM
+  {{ ref('stg_crm_interactions') }}
+WHERE
+  interaction_type IS NOT NULL
+  AND TRIM(interaction_type) <> ''

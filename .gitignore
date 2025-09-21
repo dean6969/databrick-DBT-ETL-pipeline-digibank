@@ -5,3 +5,4 @@ logs/
 .venv/
 
 package-lock.yml
+dbt_internal_packages/
