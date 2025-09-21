@@ -1,23 +1,26 @@
-name: Pull and Trigger Databricks Job
+name: Sync Databricks Repo and Trigger Job
 
 on:
   push:
     branches:
-      - main   # Mỗi lần push vào branch main
+      - main   # chạy mỗi lần push vào branch main
 
 jobs:
   sync-and-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Pull latest code into Databricks Repo
+      - name: Pull latest code into Databricks Repo (via PATCH)
         run: |
-          curl -X POST "${DATABRICKS_HOST}/api/2.0/repos/${DATABRICKS_REPO_ID}/pull" \
+          curl -X PATCH "${DATABRICKS_HOST}/api/2.0/repos/${DATABRICKS_REPO_ID}" \
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
-            -H "Content-Type: application/json"
+            -H "Content-Type: application/json" \
+            -d '{
+              "branch": "main"
+            }'
         env:
-          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}   # ví dụ: https://dbc-c8dec434-b9a5.cloud.databricks.com
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          DATABRICKS_REPO_ID: ${DATABRICKS_REPO_ID}
+          DATABRICKS_REPO_ID: ${DATABRICKS_REPO_ID}            # Repo ID từ UI Databricks
 
       - name: Trigger Databricks Job
         run: |
