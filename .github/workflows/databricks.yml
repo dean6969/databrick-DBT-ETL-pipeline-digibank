@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Pull latest code into Databricks Repo (via PATCH)
         run: |
-          curl -X PATCH "${DATABRICKS_HOST}/api/2.0/repos/612350031986711" \
+          curl -X PATCH "${DATABRICKS_HOST}/api/2.0/repos/612350031986752" \
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
             -H "Content-Type: application/json" \
             -d '{
@@ -20,7 +20,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}   # ví dụ: https://dbc-c8dec434-b9a5.cloud.databricks.com
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
-          DATABRICKS_REPO_ID: "612350031986711"            # Repo ID từ UI Databricks
+          DATABRICKS_REPO_ID: "612350031986752"            # Repo ID từ UI Databricks
 
       - name: Trigger Databricks Job
         run: |
