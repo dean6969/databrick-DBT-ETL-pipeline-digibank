@@ -275,7 +275,7 @@ Check setup file on setup folder
 
 ---
 
-## 🧪 Testing (Future)
+## 🧪 Testing 
 
 **Current state** ( Edge cases handled )
 
@@ -284,7 +284,7 @@ Check setup file on setup folder
 * **Keys**: `unique` + `not_null` on `customer_360.customer_id`, `dim_customer.customer_id`, ... and surrogate keys as applicable.
 * **format**: Format: Enforce consistent phone number formats (e.g., disallow +63, require numbers to start with 0).
 
-**Plan to add built‑in tests (later)**
+**Plan to add other tests (later)**
 * **Integrity checks**: no future dates; non‑zero amounts for payable statuses; SCD2 window non‑overlap.
 * **Freshness**: source freshness for critical feeds (transaction & customer).
 
