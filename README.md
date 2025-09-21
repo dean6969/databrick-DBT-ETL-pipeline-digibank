@@ -42,7 +42,7 @@ flowchart LR
 ---
 
 ## 🔗 Data Lineage
-![Star Schema Architecture](assets/etl_workflow.png)
+![Star Schema Architecture](Assets/etl_workflow.png)
 
 
 ---
@@ -51,7 +51,7 @@ flowchart LR
 
 ## 🧱 Data Modelling
 
-![Star Schema Architecture](assets/data_modelling.png)
+![Star Schema Architecture](Assets/data_modelling.png)
 
 * **Dim**: `dim_customer` (SCD2), `dim_product` (SCD2 from product enrollments), `dim_date`, `dim_time`, `dim_interactions`
 * **Fact**: `fact_transactions`, `fact_product_enrollments`, `fact_interactions`
