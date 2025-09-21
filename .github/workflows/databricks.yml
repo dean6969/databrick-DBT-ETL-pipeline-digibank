@@ -1,4 +1,4 @@
-name: Trigger Databricks Job
+name: Pull and Trigger Databricks Job
 
 on:
   push:
@@ -6,16 +6,26 @@ on:
       - main   # Mỗi lần push vào branch main
 
 jobs:
-  run-databricks-job:
+  sync-and-run:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger Databricks Job via REST API
+      - name: Pull latest code into Databricks Repo
+        run: |
+          curl -X POST "${DATABRICKS_HOST}/api/2.0/repos/${DATABRICKS_REPO_ID}/pull" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            -H "Content-Type: application/json"
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+          DATABRICKS_REPO_ID: ${DATABRICKS_REPO_ID}
+
+      - name: Trigger Databricks Job
         run: |
           curl -X POST "${DATABRICKS_HOST}/api/2.1/jobs/run-now" \
             -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
             -H "Content-Type: application/json" \
             -d '{
-              "job_id": 465245283901461
+              "job_id": 218008251033428
             }'
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
