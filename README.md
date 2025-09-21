@@ -19,6 +19,30 @@ Create a unified **Customer 360** profile from four feeds: `customer_raw`, `prod
 
 Primary join key: `customer_id` (stable). If not stable, derive a unified key in staging (hash of natural keys).
 
+## 🗂️ Repo Structure (expanded)
+
+```
+.
+├─ .github/workflows/
+│  └─ databricks.yml            # CI runner (reference only)
+├─ Assets/                      # Images for README
+├─ setup/
+│  ├─ DDL step.ipynb            # Bootstrap catalogs/schemas; upload Landing files
+│  └─ etl_pipelines.yml         # Databricks Workflow (Jobs) definition
+├─ snapshots/
+│  ├─ snp_customer.sql
+│  └─ snp_product_enrollments.sql
+├─ models/
+│  ├─ staging/                  
+│  ├─ silver/ # store dim and fact
+│  └─ gold/
+│     └─ customer/customer_360.sql
+├─ tests/
+├─ dbt_project.yml
+├─ packages.yml
+└─ README.md
+```
+
 ## 🧭 Data Flow (Medallion)
 
 ```mermaid
@@ -206,29 +230,7 @@ where is_active90 = true;
 
 
 
-## 🗂️ Repo Structure (expanded)
 
-```
-.
-├─ .github/workflows/
-│  └─ databricks.yml            # CI runner (reference only)
-├─ Assets/                      # Images for README
-├─ setup/
-│  ├─ DDL step.ipynb            # Bootstrap catalogs/schemas; upload Landing files
-│  └─ etl_pipelines.yml         # Databricks Workflow (Jobs) definition
-├─ snapshots/
-│  ├─ snp_customer.sql
-│  └─ snp_product_enrollments.sql
-├─ models/
-│  ├─ staging/                  
-│  ├─ silver/ # store dim and fact
-│  └─ gold/
-│     └─ customer/customer_360.sql
-├─ tests/
-├─ dbt_project.yml
-├─ packages.yml
-└─ README.md
-```
 
 ---
 
