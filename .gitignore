@@ -6,3 +6,5 @@ logs/
 
 package-lock.yml
 dbt_internal_packages/
+
+check.txt

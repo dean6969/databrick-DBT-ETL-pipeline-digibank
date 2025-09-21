@@ -1,15 +1,15 @@
 {{ config(materialized='table') }}
 
-{% set lookback_days = var('customer360_lookback_days', 90) %}
+{% set lookback_days = var('customer360_90_days', 90) %}
 
 with 90_days as (
   -- calculate 90 last until now
   select
-    date_sub(current_date(), {{ lookback_days - 1 }}) as start_date,
+    date_sub(current_date(), {{ 90_days - 1 }}) as start_date,
     current_date()                                    as end_date
 ),
 
--- 1) Current customer apply SCD 2
+-- 1 Current customer apply SCD 2
 cust as (
   select
     customer_id, first_name, last_name, email, mobile, gender,
@@ -18,7 +18,7 @@ cust as (
   where is_current = true
 ),
 
--- 2) total transaction
+-- 2 total transaction in 90 days
 tx_90d as (
   select
     t.customer_id,
@@ -41,7 +41,7 @@ tx_agg as (
   group by customer_id
 ),
 
--- 3) Tương tác trong 90 ngày
+-- 3 total interaction event in 90 days
 intr_90d as (
   select
     fi.customer_id,

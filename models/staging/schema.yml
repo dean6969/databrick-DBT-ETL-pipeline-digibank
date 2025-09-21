@@ -41,6 +41,8 @@ models:
         description: "Lowercased email."
       - name: mobile
         description: "Digits-only mobile."
+        test:
+          - mobile_format
       - name: gender
         description: "Gender."
         tests:

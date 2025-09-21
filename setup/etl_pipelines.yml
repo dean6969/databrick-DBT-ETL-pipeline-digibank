@@ -1,0 +1,361 @@
+resources:
+  jobs:
+    ETL_pipeline:
+      name: ETL pipeline
+      tasks:
+        - task_key: dim_date
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s dim_date
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: dim_time
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s dim_time
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: stg_crm_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s stg_crm_interactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: stg_customer
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s stg_customer
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: stg_product_enrollments
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s stg_product_enrollments
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: stg_transaction_history
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s stg_transaction_history
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_dim_date
+          depends_on:
+            - task_key: dim_date
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s dim_date
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_dim_time
+          depends_on:
+            - task_key: dim_time
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s dim_time
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_stg_crm_interactions
+          depends_on:
+            - task_key: stg_crm_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s stg_crm_interactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: dim_interactions
+          depends_on:
+            - task_key: test_stg_crm_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s dim_interactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_dim_interactions
+          depends_on:
+            - task_key: dim_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s dim_interactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_stg_customer
+          depends_on:
+            - task_key: stg_customer
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s stg_customer
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: snapshot_customer
+          depends_on:
+            - task_key: test_stg_customer
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt snapshot -s snp_customer
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: dim_customer
+          depends_on:
+            - task_key: snapshot_customer
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s dim_customer
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_dim_customer
+          depends_on:
+            - task_key: dim_customer
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s dim_customer
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: fact_interactions
+          depends_on:
+            - task_key: test_dim_date
+            - task_key: test_dim_customer
+            - task_key: test_dim_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s fact_interactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_fact_interactions
+          depends_on:
+            - task_key: fact_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s fact_interactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: customer_360
+          depends_on:
+            - task_key: test_fact_interactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s customer_360
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_stg_product_enrollments
+          depends_on:
+            - task_key: stg_product_enrollments
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s stg_product_enrollments
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: snapshot_product_enrollments
+          depends_on:
+            - task_key: test_stg_product_enrollments
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt snapshot -s snp_product_enrollments
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: dim_product_enrollment
+          depends_on:
+            - task_key: snapshot_product_enrollments
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s dim_product
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_dim_product
+          depends_on:
+            - task_key: dim_product_enrollment
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s dim_product
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: fact_product_enrollments
+          depends_on:
+            - task_key: test_dim_product
+            - task_key: test_dim_date
+            - task_key: test_dim_customer
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s fact_product_enrollments
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_fact_product_enrollments
+          depends_on:
+            - task_key: fact_product_enrollments
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s fact_product_enrollments
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: fact_transactions
+          depends_on:
+            - task_key: test_dim_product
+            - task_key: test_dim_date
+            - task_key: test_dim_time
+            - task_key: test_dim_customer
+            - task_key: test_stg_transaction_history
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run -s fact_transactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_fact_transactions
+          depends_on:
+            - task_key: fact_transactions
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt test -s fact_transactions
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+        - task_key: test_stg_transaction_history
+          depends_on:
+            - task_key: stg_transaction_history
+          dbt_task:
+            project_directory: /Repos/repotest/databrick-DBT-ETL-pipeline-digibank
+            commands:
+              - dbt deps
+              - dbt run
+            schema: digi
+            warehouse_id: 8da2f1eeddb58486
+            catalog: digibank
+            source: WORKSPACE
+          environment_key: dbt-default
+      queue:
+        enabled: true
+      environments:
+        - environment_key: dbt-default
+          spec:
+            client: "3"
+            dependencies:
+              - dbt-databricks>=1.0.0,<2.0.0
+      performance_target: PERFORMANCE_OPTIMIZED
