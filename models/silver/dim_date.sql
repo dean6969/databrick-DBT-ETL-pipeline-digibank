@@ -4,7 +4,7 @@
 
 with dates as (
 
-    -- create automatically date
+    -- tạo danh sách ngày từ 2010 đến 2030
     {{ dbt_utils.date_spine(
         datepart="day",
         start_date="cast('2010-01-01' as date)",
@@ -15,7 +15,7 @@ with dates as (
 
 select
     cast(date_day as date) as date,
-    cast(date_format(date_day, 'yyyyMMdd') as int) as date_pk,
+    cast(date_format(date_day, 'yyyyMMdd') as bigint) as date_pk,
     year(date_day)   as year,
     quarter(date_day) as quarter,
     month(date_day)  as month,

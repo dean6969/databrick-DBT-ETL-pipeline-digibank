@@ -1,11 +1,11 @@
 {{ config(materialized='table') }}
 
-{% set lookback_days = var('customer360_90_days', 90) %}
+{% set window_days = var('customer360_90_days', 90) %}
 
 with 90_days as (
   -- calculate 90 last until now
   select
-    date_sub(current_date(), {{ 90_days - 1 }}) as start_date,
+    date_sub(current_date(), {{ window_days - 1 }}) as start_date,
     current_date()                                    as end_date
 ),
 
