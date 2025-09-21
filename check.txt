@@ -1,6 +1,0 @@
-dbt run -s path:models/staging/*
-
-dbt snapshot -s snapshots/snp_customer.sql
-dbt snapshot -s snapshots/snp_product_enrollments.sql
-
-dbt run -s path:models/silver/*
